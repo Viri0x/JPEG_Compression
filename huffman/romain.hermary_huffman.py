@@ -1,16 +1,5 @@
-__license__ = 'GolluM & Junior (c) EPITA'
-__docformat__ = 'reStructuredText'
-__revision__ = '$Id: huffman.py 2018-04-24'
-
-"""
-Huffman homework
-2018
-@author: login
-"""
-
 from algopy import bintree
 from algopy import heap
-
 
 ################################################################################
 ## COMPRESSION
@@ -43,7 +32,7 @@ def buildHuffmantree(inputList):
     """
     if len(inputList) == 0:
         return bintree.BinTree(None, None, None)
-    
+
     OccListe = [] #(Occur, Character)
     while len(inputList) > 0:
         maximum = inputList[0][0]
@@ -54,7 +43,7 @@ def buildHuffmantree(inputList):
                 place = i
         OccListe.append((inputList[place][0], bintree.BinTree(inputList[place][1], None, None)))
         inputList.pop(place)
-                
+
     while len(OccListe) > 1:
         RightChild = OccListe.pop()
         LeftChild = OccListe.pop()
@@ -62,9 +51,9 @@ def buildHuffmantree(inputList):
         FirstBintree = bintree.BinTree(None, LeftChild[1], RightChild[1])
         i = 0
         longeurListe = len(OccListe)
-        NewOccList = []  
+        NewOccList = []
         while i < longeurListe and KeyFirst < OccListe[i][0]:
-            NewOccList.append(OccListe[i])    
+            NewOccList.append(OccListe[i])
             i += 1
         NewOccList.append((KeyFirst, FirstBintree))
         while i < longeurListe:
@@ -74,10 +63,10 @@ def buildHuffmantree(inputList):
     return OccListe[0][1]
     pass
 
-#Fonction récursive qui renvoie une liste de couples
-#(Caractère, correspondance binaire suivant l'huffmanTree)
-#ajoute "0" au string quand la récursion va à gauche, "1" si elle part à droite
-#arrivé en bout de récursion, la fonction ajoute le couple correspondant à la liste
+# Fonction récursive qui renvoie une liste de couples
+# (Caractère, correspondance binaire suivant l'huffmanTree)
+# ajoute "0" au string quand la récursion va à gauche, "1" si elle part à droite
+# arrivé en bout de récursion, la fonction ajoute le couple correspondant à la liste
 def _buildCorrespTable(T, coor, L):
     if T.left is None:
         L.append((T.key, coor))
@@ -102,9 +91,9 @@ def encodedata(huffmanTree, dataIN):
     return res
     pass
 
-#Convertit un int en octet, sachant que l'int est un code ascii donc ne peut
-#pas dépasser 255 et le résultat s'écrira donc sur un maximum de 8 bits.
-#Elle renvoie, dans tous les cas, un octet.
+# Convertit un int en octet, sachant que l'int est un code ascii donc ne peut
+# pas dépasser 255 et le résultat s'écrira donc sur un maximum de 8 bits.
+# Elle renvoie, dans tous les cas, un octet.
 
 def _intToByte(A):
     ToSubstract = 128
@@ -118,9 +107,9 @@ def _intToByte(A):
             res += "0"
             ToSubstract = ToSubstract // 2
     return res
-            
-#Même fonction dans le sens inverse
-#Sauf que l'entrée n'est pas forcément un octet
+
+# Même fonction dans le sens inverse
+# Sauf que l'entrée n'est pas forcément un octet
 def _byteToInt(A):
     index = len(A) - 1
     multi = 1
@@ -130,12 +119,12 @@ def _byteToInt(A):
         multi = multi * 2
         index -= 1
     return res
-    
 
-#Fonction récursive qui prend un huffmanTree et un string en paramètres
-#Elle suit les règles de l'énoncé : quand on va à gauche dans l'arbre on ajoute "0",
-#quand on arrive sur une feuille elle transforme le caractère en code ASCII (binaire sur un octet)
-#précédé d'un "1" et l'ajoute au résultat 
+
+# Fonction récursive qui prend un huffmanTree et un string en paramètres
+# Elle suit les règles de l'énoncé : quand on va à gauche dans l'arbre on ajoute "0",
+# quand on arrive sur une feuille elle transforme le caractère en code ASCII (binaire sur un octet)
+# précédé d'un "1" et l'ajoute au résultat
 def _encodetree(T, res):
     if T.left is None:
         res += "1" + _intToByte(ord(T.key))
@@ -192,17 +181,16 @@ def compress(dataIn):
     HuffmanTree = buildHuffmantree(Freq)
     EncodedTree = encodetree(HuffmanTree)
     EncodedData = encodedata(HuffmanTree, dataIn)
-    var1 = tobinary(EncodedData) 
+    var1 = tobinary(EncodedData)
     var2 = tobinary(EncodedTree)
     return (var1, var2)
     pass
 
-    
 ################################################################################
 ## DECOMPRESSION
 
-#Fonction récursive qui renvoie un couple (obj, bool)
-#le bool est vrai si la clef renvoyée est celle d'une feuille faux sinon 
+# Fonction récursive qui renvoie un couple (obj, bool)
+# le bool est vrai si la clef renvoyée est celle d'une feuille faux sinon
 # l'objet renvoyé est la clef du noeud que l'adresse Coor indique dans l'huffmanTree T
 def _decodedata(T, index, Coor):
     if index >= len(Coor):
@@ -232,11 +220,10 @@ def decodedata(huffmanTree, dataIN):
     return res
     pass
 
-#Fonction récursive pour construire un HuffmanTree, elle prend en paramètre le code de l'arbre
-#et l'index, quand l'index et trop loin elle s'arrête, quand elle rencontre un 1
-#elle construit la feuille avec le caractère correspondant, sinon elle construit un fils gauche
-#et débute un nouvelle récursion
-
+# Fonction récursive pour construire un HuffmanTree, elle prend en paramètre le code de l'arbre
+# et l'index, quand l'index et trop loin elle s'arrête, quand elle rencontre un 1
+# elle construit la feuille avec le caractère correspondant, sinon elle construit un fils gauche
+# et débute un nouvelle récursion
 def _decodetree(dataIN, index):
     if index >= len(dataIN):
         return
@@ -258,13 +245,13 @@ def _decodetree(dataIN, index):
         B.right = Couple[0]
         index = Couple[1]
     return (B, index)
-        
-    
+
+
 def decodetree(dataIN):
     """
     Decodes a huffman tree from its binary representation:
         * a '0' means we add a new internal node and go to its left node
-        * a '1' means the next 8 values are the encoded character of the current leaf         
+        * a '1' means the next 8 values are the encoded character of the current leaf
     """
     R = _decodetree(dataIN, 0)
     return R[0]
